@@ -44,7 +44,6 @@ module.exports = {
             for (const finance of allFinances) {
                 financial.total += finance.value;
             }
-            
 
             return response.status(200).json( financial );
 
