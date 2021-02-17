@@ -1,0 +1,29 @@
+treinadores
+	-id
+	-nome
+	-login
+	-senha
+
+membros
+	-id
+	-nome
+	-rg/cpf
+	-celular
+	-endereco(null)
+	-email
+	-data_matricula
+	-status(ok, proximo_do_vencimento, devendo)
+	-ultimo_pagamento(null)
+	-periodicidade_pagamento
+	-treino(aerobico, forca, outro)
+	-periodicidade_treino
+
+movimentacao_financeira
+	-id
+	-operador
+	-data/hora
+	-valor
+	-tipo(cobrança, pagamento, lancamento, lancamento_futuro)
+	-id_membro(null)
+	-data_fluxo(null)
+	-descricao(null)
