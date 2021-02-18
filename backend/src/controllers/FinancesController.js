@@ -9,7 +9,7 @@ module.exports = {
         try {
             await connection('finances').insert({
                 id_operator: id_operator,
-                operation_date: '2021-02-04T15:30:00.000Z',
+                operation_date: new Date().toISOString(),
                 value: value,
                 type: type,
                 id_member: id_member,

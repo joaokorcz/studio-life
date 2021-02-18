@@ -13,7 +13,7 @@ module.exports = {
                 cellphone: cellphone,
                 address: address,
                 email: email,
-                registration_date: '2020-12-04T15:30:00.000Z',
+                registration_date: new Date().toISOString(),
                 status: 'ok',
                 last_payment: null,
                 payment_frequency: payment_frequency,
@@ -33,7 +33,7 @@ module.exports = {
 
         const { page = 1 } = request.query;
 
-        try{
+        try {
             const members = await connection('members').limit(10).offset((page - 1) * 10).select('*');
 
             return response.status(200).json(members);
@@ -41,7 +41,30 @@ module.exports = {
         } catch(error) {
             return response.status(400).json({ error: error });
 
-        }      
+        }  
+
+    },
+
+    async update(request, response) {
+
+        const { id_member, cellphone, address, email, payment_frequency, training, workout_frequency } = request.body;
+
+        try {
+            await connection('members').where('id_member', id_member).update({
+                cellphone: cellphone,
+                address: address,
+                email: email,
+                payment_frequency: payment_frequency,
+                training: training,
+                workout_frequency: workout_frequency
+            });
+
+            return response.status(200).json({ status: 'Membro atualizado!' })
+            
+        } catch(error) {
+            return response.status(400).json({ error: error });
+
+        }
 
     },
 
@@ -49,7 +72,7 @@ module.exports = {
         
         const { id_member } = request.body;
 
-        try{
+        try {
             await connection('members').where({
                 id_member: id_member
             }).delete();
@@ -60,5 +83,5 @@ module.exports = {
 
         }
 
-    },
+    }
 }
