@@ -13,7 +13,7 @@ module.exports = {
                 cellphone: cellphone,
                 address: address,
                 email: email,
-                registration_date: new Date().toISOString(),
+                registration_date: new Date((new Date()).setHours(new Date().getHours()-3)).toISOString(),
                 status: 'ok',
                 last_payment: null,
                 payment_frequency: payment_frequency,
@@ -38,10 +38,10 @@ module.exports = {
 
             for (const member of members) {
                 if(member.last_payment){
-                    var nextPayment = new Date(member.last_payment);
-                    nextPayment.setMonth(nextPayment.getMonth() + member.payment_frequency);
-                    member.expiration = nextPayment;
-                }                
+                    member.expiration = new Date(new Date(member.last_payment).setMonth(new Date(member.last_payment).getMonth() + member.payment_frequency)).toISOString();
+                } else {
+                    member.expiration = null;
+                }
             }
 
             return response.status(200).json(members);

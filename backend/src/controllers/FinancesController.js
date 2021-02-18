@@ -9,7 +9,7 @@ module.exports = {
         try {
             await connection('finances').insert({
                 id_operator: id_operator,
-                operation_date: new Date().toISOString(),
+                operation_date: new Date((new Date()).setHours(new Date().getHours()-3)).toISOString(),
                 value: value,
                 type: 'now',
                 id_member: null,
@@ -32,7 +32,7 @@ module.exports = {
         try {
             await connection('finances').insert({
                 id_operator: id_operator,
-                operation_date: new Date().toISOString(),
+                operation_date: new Date((new Date()).setHours(new Date().getHours()-3)).toISOString(),
                 value: value,
                 type: 'future',
                 id_member: null,
@@ -55,7 +55,7 @@ module.exports = {
         try {
             await connection('finances').insert({
                 id_operator: id_operator,
-                operation_date: new Date().toISOString(),
+                operation_date: new Date((new Date()).setHours(new Date().getHours()-3)).toISOString(),
                 value: value,
                 type: 'payment',
                 id_member: id_member,
@@ -65,7 +65,7 @@ module.exports = {
 
             await connection('members').where('id_member', id_member).update({
                 status: 'ok',
-                last_payment: new Date().toISOString()
+                last_payment: new Date((new Date()).setHours(new Date().getHours()-3)).toISOString()
             });
 
             return response.status(200).json({ status: 'Pagamento recebido!' });
