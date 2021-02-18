@@ -2,18 +2,18 @@ const connection = require('../database/connection');
 
 module.exports = {
 
-    async create(request, response) {
+    async createNowOperation(request, response) {
 
-        const { id_operator, value, type, id_member, future_date, description } = request.body;
+        const { id_operator, value, description } = request.body;
 
         try {
             await connection('finances').insert({
                 id_operator: id_operator,
                 operation_date: new Date().toISOString(),
                 value: value,
-                type: type,
-                id_member: id_member,
-                future_date: future_date,
+                type: 'now',
+                id_member: null,
+                future_date: null,
                 description: description
             });
 
@@ -23,6 +23,58 @@ module.exports = {
             return response.status(400).json({ error: error });
 
         }
+    },
+
+    async createFutureOperation(request, response) {
+
+        const { id_operator, value, description, future_date } = request.body;
+
+        try {
+            await connection('finances').insert({
+                id_operator: id_operator,
+                operation_date: new Date().toISOString(),
+                value: value,
+                type: 'future',
+                id_member: null,
+                future_date: future_date,
+                description: description
+            });
+
+            return response.status(200).json({ status: 'Operação programada!' });
+
+        } catch (error) {
+            return response.status(400).json({ error: error });
+
+        };
+    },
+
+    async receiveMemberPayment(request, response) {
+
+        const { id_member, id_operator, value, description } = request.body;
+
+        try {
+            await connection('finances').insert({
+                id_operator: id_operator,
+                operation_date: new Date().toISOString(),
+                value: value,
+                type: 'payment',
+                id_member: id_member,
+                future_date: null,
+                description: description
+            });
+
+            await connection('members').where('id_member', id_member).update({
+                status: 'ok',
+                last_payment: new Date().toISOString()
+            });
+
+            return response.status(200).json({ status: 'Pagamento recebido!' });
+
+        } catch(error) {
+            return response.status(400).json({ error: error });
+
+        }
+
     },
 
     async index(request, response) {
@@ -42,10 +94,27 @@ module.exports = {
             const allFinances = await connection('finances').select('*');
             
             for (const finance of allFinances) {
-                financial.total += finance.value;
+                if(finance.type !== 'future'){
+                    financial.total += finance.value;
+                }
             }
 
             return response.status(200).json( financial );
+
+        } catch(error) {
+            return response.status(400).json({ error: error });
+
+        }
+
+    },
+
+    async delete(request, response) {
+
+        const { id_finance } = request.body;
+
+        try{
+            await connection('finances').where('id_finance', id_finance).delete();
+            return response.status(200).json({ status: 'Finança removida!' });
 
         } catch(error) {
             return response.status(400).json({ error: error });

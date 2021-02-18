@@ -19,7 +19,7 @@ module.exports = {
                 payment_frequency: payment_frequency,
                 training: training,
                 workout_frequency: workout_frequency
-            })
+            });
             return response.status(200).json({ status: 'Membro criado!' });
 
         } catch(error) {
@@ -35,6 +35,14 @@ module.exports = {
 
         try {
             const members = await connection('members').limit(10).offset((page - 1) * 10).select('*');
+
+            for (const member of members) {
+                if(member.last_payment){
+                    var nextPayment = new Date(member.last_payment);
+                    nextPayment.setMonth(nextPayment.getMonth() + member.payment_frequency);
+                    member.expiration = nextPayment;
+                }                
+            }
 
             return response.status(200).json(members);
 
@@ -59,7 +67,7 @@ module.exports = {
                 workout_frequency: workout_frequency
             });
 
-            return response.status(200).json({ status: 'Membro atualizado!' })
+            return response.status(200).json({ status: 'Membro atualizado!' });
             
         } catch(error) {
             return response.status(400).json({ error: error });
@@ -73,9 +81,7 @@ module.exports = {
         const { id_member } = request.body;
 
         try {
-            await connection('members').where({
-                id_member: id_member
-            }).delete();
+            await connection('members').where('id_member', id_member).delete();
             return response.status(200).json({ status: 'Membro removido!' });
 
         } catch(error) {
